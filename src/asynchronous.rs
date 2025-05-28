@@ -2,7 +2,7 @@ use embedded_hal_async as hal_async;
 use hal_async::delay::DelayNs;
 use hal_async::i2c::I2c;
 
-use sensirion_i2c::{crc8, i2c};
+use sensirion_i2c::crc8;
 
 use crate::{Command, Error};
 #[cfg(feature = "voc_index")]
