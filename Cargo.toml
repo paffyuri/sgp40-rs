@@ -1,6 +1,6 @@
 [package]
 name = "sgp40"
-version = "1.0.0"
+version = "1.1.0"
 authors = ["Mikko Jaakkola <mikko.la.jaakkola@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Rust driver for the Sensirion SGP40 gas sensor."
@@ -13,18 +13,20 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["voc_index"]
+default = ["voc_index", "sync"]
 voc_index = []
+sync = ["dep:embedded-hal"]
+async = ["dep:embedded-hal-async"]
 
 [dependencies]
 sensirion-i2c = "0.4"
-embedded-hal = { version = "1.0" }
+embedded-hal = { version = "1.0", optional = true }
+embedded-hal-async = { version = "1.0", optional = true }
 fixed = "1"
 
 [dev-dependencies]
 linux-embedded-hal = "0.4"
 embedded-hal-mock = { version = "0.11", features = ["eh1"] }
-
 
 [profile.release]
 lto = true
