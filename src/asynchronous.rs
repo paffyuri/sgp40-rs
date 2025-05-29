@@ -14,7 +14,7 @@ use crate::vocalg::VocAlgorithm;
 /// rock'n'roll. This driver doesn't require special starting but once can start to
 /// make measurements right away. However, the initial values after start-up will
 /// unstable so you will want to throw away some of them.
-pub struct Sgp40Async<I2C, D> {
+pub struct Sgp40<I2C, D> {
     i2c: I2C,
     address: u8,
     delay: D,
@@ -23,14 +23,14 @@ pub struct Sgp40Async<I2C, D> {
     voc: VocAlgorithm,
 }
 
-impl<I2C, D, E> Sgp40Async<I2C, D>
+impl<I2C, D, E> Sgp40<I2C, D>
 where
     I2C: I2c<Error = E>,
     D: DelayNs,
 {
     /// Creates Sgp40Async driver
     pub fn new(i2c: I2C, address: u8, delay: D) -> Self {
-        Sgp40Async {
+        Sgp40 {
             i2c,
             address,
             delay,
