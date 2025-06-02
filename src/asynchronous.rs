@@ -8,7 +8,7 @@ use crate::{Command, Error};
 #[cfg(feature = "voc_index")]
 use crate::vocalg::VocAlgorithm;
 
-/// Sgp40Async driver instance
+/// Sgp40 async driver instance
 ///
 /// Create the driver instance with valid I²C address (0x59) and then it is just
 /// rock'n'roll. This driver doesn't require special starting but once can start to
@@ -28,7 +28,7 @@ where
     I2C: I2c<Error = E>,
     D: DelayNs,
 {
-    /// Creates Sgp40Async driver
+    /// Creates Sgp40 Async driver
     pub fn new(i2c: I2C, address: u8, delay: D) -> Self {
         Sgp40 {
             i2c,

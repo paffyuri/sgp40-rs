@@ -418,7 +418,7 @@ dependencies = [
 
 [[package]]
 name = "sgp40"
-version = "1.1.0"
+version = "1.0.0"
 dependencies = [
  "embedded-hal 1.0.0",
  "embedded-hal-async",
