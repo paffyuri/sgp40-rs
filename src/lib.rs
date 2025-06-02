@@ -1,3 +1,70 @@
+//! Platform agnostic Rust driver for Sensirion SGP40 device with
+//! gas, temperature and humidity sensors based on
+//! the [`embedded-hal`](https://github.com/japaric/embedded-hal) traits.
+//!
+//! ## Sensirion SGP40
+//!
+//! Sensirion SGP40 is a low-power accurate gas sensor for air quality application.
+//! The sensor has different sampling rates to optimize power-consumption per application
+//! bases as well as ability save and set the baseline for faster start-up accuracy.
+//! The sensor uses I²C interface and measures TVOC (*Total Volatile Organic Compounds*)
+//!
+//! Datasheet: https://www.sensirion.com/file/datasheet_sgp40
+//!
+//! ## Usage
+//!
+//! ### Instantiating
+//!
+//! Import this crate and an `embedded_hal` implementation, then instantiate
+//! the device:
+//!
+//! ```no_run
+//! use linux_embedded_hal as hal;
+//!
+//! use hal::{Delay, I2cdev};
+//! use sgp40::Sgp40;
+//!
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//! let mut sgp = Sgp40::new(dev, 0x59, Delay);
+//! ```
+//! ### Doing Measurements
+//!
+//! The device is doing measurements independently of the driver and calls to the device
+//! will just fetch the latest information making the usage easy.
+//!
+//! ```no_run
+//! use linux_embedded_hal as hal;
+//! use hal::{Delay, I2cdev};
+//!
+//! use std::time::Duration;
+//! use std::thread;
+//!
+//! use sgp40::Sgp40;
+//!
+//! let dev = I2cdev::new("/dev/i2c-1").unwrap();
+//!
+//! let mut sensor = Sgp40::new(dev, 0x59, Delay);
+//!
+//! // Discard the first 45 samples as the algorithm is just warming up.
+//! for _ in 1..45 {
+//!     sensor.measure_voc_index().unwrap();
+//! }
+//!
+//! loop {
+//!     if let Ok(result) = sensor.measure_voc_index() {
+//!         println!("VOC index: {}", result);
+//!     }
+//!     else {
+//!         println!("Failed I2C reading");
+//!     }
+//!
+//!     thread::sleep(Duration::new(1_u64, 0));
+//! }
+//! ```
+//! ### VOC Index calculation
+//! VOC index calculation is not no-std proof right now so if this is a problem for you, then
+//! you want to turn the feature off by turning "the defaults off". Work for no-std index calculation
+//! will start soon.
 #![cfg_attr(not(test), no_std)]
 #![allow(non_snake_case)]
 #![allow(dead_code)]
@@ -8,7 +75,6 @@ mod synchronous;
 use embedded_hal::i2c::I2c;
 #[cfg(feature = "sync")]
 pub use synchronous::*;
-
 
 #[cfg(feature = "voc_index")]
 mod vocalg;
@@ -59,6 +125,8 @@ enum Command {
     HeaterOff,
     /// Build-in self-test. This should be normally needed by any application
     MeasureTest,
+    /// Get chipset featureset
+    //FeatureSet,
     /// This is I²C wide command resetting all devices connected to the same bus
     SoftReset,
 }
@@ -71,6 +139,7 @@ impl Command {
             Command::Serial => (0x3682, 1),
             Command::HeaterOff => (0x3615, 1),
             Command::MeasureTest => (0x280e, 250),
+            //Command::FeatureSet => (0x202f, 1),
             Command::SoftReset => (0x0006, 1),
         }
     }

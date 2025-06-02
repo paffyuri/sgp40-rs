@@ -240,6 +240,8 @@ where
     }
 }
 
+// Testing is focused on checking the primitive transactions. It is assumed that during
+// the real sensor testing, the basic flows in the command structure has been caught.
 #[cfg(test)]
 mod tests {
     use embedded_hal_mock as mock_hal;
@@ -264,7 +266,7 @@ mod tests {
                     cmd.to_be_bytes().to_vec(),
                     [0x7f, 0xfb, 0x4b, 0x66, 0x8a, 0x2f].to_vec(),
                 ]
-                .concat(),
+                    .concat(),
             ),
             Transaction::read(SGP40_ADDR, vec![0x12, 0x34, 0x37]),
         ];
